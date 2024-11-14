@@ -37,10 +37,15 @@ class OneTimeSenderController extends Controller
             ]);
             $total_send = TempMailAddress::all()->count();
 
+            $request->body = $this->processBody($request->body);
+
             $mailData = [
                 'subject' => $request->subject,
                 'body' => $request->body,
             ];
+
+
+
             $getEmailAddress = TempMailAddress::all('email');
             foreach ($getEmailAddress as $value) {
                 SendEmailJob::dispatch($value->email, $mailData);
@@ -53,5 +58,11 @@ class OneTimeSenderController extends Controller
             return back()->with('error', 'Failed! Something went wrong.');
         }
 
+    }
+
+    private function processBody($body)
+    {
+        // Example processing: Add a wrapper div with a class
+        return '<div class="processed-body">' . $body . '</div>';
     }
 }
